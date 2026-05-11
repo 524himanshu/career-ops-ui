@@ -122,7 +122,7 @@ export default function Landing() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: "linear-gradient(135deg,#00ff87,#00ccff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>⚡</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, letterSpacing: -0.5 }}>ApplyAI</span>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 18, letterSpacing: -0.5 }}>OfferForge</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
           <a href="#features" className="nav-link" style={{ color: "#555", fontSize: 14, textDecoration: "none", transition: "color 0.2s" }}>Features</a>
@@ -268,7 +268,7 @@ export default function Landing() {
             fontSize: 18, fontWeight: 800, cursor: "pointer",
             transition: "all 0.2s", letterSpacing: -0.3,
           }}>
-            Launch ApplyAI →
+            Launch OfferForge →
           </button>
         </div>
       </div>
@@ -277,7 +277,7 @@ export default function Landing() {
       <div style={{ borderTop: "1px solid #0f0f0f", padding: "32px 40px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 22, height: 22, borderRadius: 5, background: "linear-gradient(135deg,#00ff87,#00ccff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>⚡</div>
-          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15 }}>ApplyAI</span>
+          <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 15 }}>OfferForge</span>
           <span style={{ fontSize: 12, color: "#333", fontFamily: "'DM Mono',monospace" }}>· Free · Open Source</span>
         </div>
         <div style={{ display: "flex", gap: 24 }}>

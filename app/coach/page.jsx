@@ -636,12 +636,12 @@ function TrackerTab() {
   const [dragging, setDragging] = useState(null);
 
   useEffect(() => {
-    try { const saved = localStorage.getItem("applyai_tracker"); if (saved) setJobs(JSON.parse(saved)); } catch (e) {}
+    try { const saved = localStorage.getItem("OfferForge_tracker"); if (saved) setJobs(JSON.parse(saved)); } catch (e) {}
   }, []);
 
   const save = (updated) => {
     setJobs(updated);
-    try { localStorage.setItem("applyai_tracker", JSON.stringify(updated)); } catch (e) {}
+    try { localStorage.setItem("OfferForge_tracker", JSON.stringify(updated)); } catch (e) {}
   };
 
   const addJob = () => {
@@ -762,7 +762,7 @@ export default function CoachPage() {
         {/* Logo */}
         <div style={{ padding: "20px 16px", borderBottom: "1px solid #111", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
           <div style={{ width: 28, height: 28, borderRadius: 7, background: "linear-gradient(135deg,#00ff87,#00ccff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>⚡</div>
-          {sidebarOpen && <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, whiteSpace: "nowrap" }}>ApplyAI</span>}
+          {sidebarOpen && <span style={{ fontFamily: "'Syne',sans-serif", fontWeight: 800, fontSize: 17, whiteSpace: "nowrap" }}>OfferForge</span>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ marginLeft: "auto", background: "transparent", border: "none", color: "#333", cursor: "pointer", fontSize: 16, flexShrink: 0 }}>
             {sidebarOpen ? "←" : "→"}
           </button>
