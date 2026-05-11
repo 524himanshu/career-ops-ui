@@ -39,6 +39,12 @@ const FEATURES = [
     desc: "Kanban board for your job search. Track every application from applied to offer, all saved locally.",
     color: "#ffcc00",
   },
+  {
+    icon: "🔎",
+    title: "Job search",
+    desc: "job search that filters by your fit score, not just keywords.",
+    color: "pink",
+  }
 ];
 
 const STEPS = [
@@ -276,7 +282,7 @@ export default function Landing() {
         </div>
         <div style={{ display: "flex", gap: 24 }}>
           <a href="https://console.groq.com" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "#333", fontFamily: "'DM Mono',monospace", textDecoration: "none" }}>Get Groq Key ↗</a>
-          <a href="https://github.com/524himanshu/career-ops" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "#333", fontFamily: "'DM Mono',monospace", textDecoration: "none" }}>GitHub ↗</a>
+          <a href="https://github.com/524himanshu/apply-ai" target="_blank" rel="noreferrer" style={{ fontSize: 12, color: "#333", fontFamily: "'DM Mono',monospace", textDecoration: "none" }}>GitHub ↗</a>
         </div>
       </div>
     </div>
