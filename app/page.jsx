@@ -44,7 +44,7 @@ const FEATURES = [
     title: "Job search",
     desc: "job search that filters by your fit score, not just keywords.",
     color: "pink",
-  }
+  },
 ];
 
 const STEPS = [
@@ -167,7 +167,7 @@ export default function Landing() {
             }}>
               Start for free →
             </button>
-            <a href="https://github.com/524himanshu/career-ops" target="_blank" rel="noreferrer" style={{
+            <a href="https://github.com/524himanshu/apply-ai" target="_blank" rel="noreferrer" style={{
               background: "transparent", color: "#555", border: "1px solid #222",
               borderRadius: 12, padding: "16px 36px", fontFamily: "'DM Mono',monospace",
               fontSize: 13, cursor: "pointer", textDecoration: "none",

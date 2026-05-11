@@ -9,7 +9,7 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-app/coach/Findjobstab.jsx
+.env.local
 
 
 # testing

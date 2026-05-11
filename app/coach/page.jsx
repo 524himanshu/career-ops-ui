@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, LevelFormat, UnderlineType, TabStopType } from "docx";
 import { saveAs } from "file-saver";
+import FindJobsTab from "../findjobs/page";
 
 // ─── GROQ ────────────────────────────────────────────────────────────────────
 
@@ -724,6 +725,7 @@ const TABS = [
   { id: "outreach", label: "Outreach", icon: "✉️" },
   { id: "salary", label: "Salary", icon: "💰" },
   { id: "tracker", label: "Tracker", icon: "📋" },
+  { id: "findjobs", label: "Find Jobs", icon: "🔍" },
 ];
 
 export default function CoachPage() {
@@ -735,6 +737,10 @@ export default function CoachPage() {
   const [evalResult, setEvalResult] = useState(null);
   const [resumeResult, setResumeResult] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const handleJobSelect = (jdText) => {
+  setJd(jdText);
+  setTab("evaluate");
+};
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#060608", color: "#fff", fontFamily: "'DM Sans',sans-serif" }}>
@@ -828,9 +834,17 @@ export default function CoachPage() {
             {tab === "outreach" && <OutreachTab jd={jd} cv={cv} apiKey={apiKey} />}
             {tab === "salary" && <SalaryTab jd={jd} apiKey={apiKey} />}
             {tab === "tracker" && <TrackerTab />}
+            {tab === "findjobs" && (
+  <FindJobsTab
+    cv={cv}
+    apiKey={apiKey}
+    onJobSelect={handleJobSelect}
+  />
+)}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
