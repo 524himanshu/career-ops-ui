@@ -4,13 +4,11 @@ import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, Level
 import { saveAs } from "file-saver";
 
 // ─── GROQ ────────────────────────────────────────────────────────────────────
+
 async function callGroq(apiKey, systemPrompt, userContent, maxTokens = 2000) {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -19,34 +17,12 @@ async function callGroq(apiKey, systemPrompt, userContent, maxTokens = 2000) {
       ],
       temperature: 0.3,
       max_tokens: maxTokens,
-      response_format: { type: "json_object" }
     }),
   });
-
-  if (!res.ok) {
-    const e = await res.json();
-    throw new Error(e.error?.message || "Groq error");
-  }
-
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || "Groq error"); }
   const data = await res.json();
-  const text = data.choices?.[0]?.message?.content;
-
-  if (!text) {
-    throw new Error("Empty response from Groq");
-  }
-
-  try {
-    return JSON.parse(text);
-  } catch (err) {
-    console.error("RAW GROQ RESPONSE:", text);
-
-    const fixed = text
-      .replace(/[\u0000-\u001F]+/g, " ")
-      .replace(/```json|```/g, "")
-      .trim();
-
-    return JSON.parse(fixed);
-  }
+  const text = data.choices[0].message.content.trim();
+  return JSON.parse(text.replace(/```json|```/g, "").trim());
 }
 
 async function callGroqText(apiKey, systemPrompt, userContent, maxTokens = 1500) {
@@ -251,6 +227,30 @@ function ScoreRing({ score, grade }) {
   );
 }
 
+
+function extractContact(cv) {
+  const email =
+    cv.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] || "";
+
+  const phone =
+    cv.match(/(\+?\d[\d\s\-()]{8,})/)?.[0] || "";
+
+  const linkedin =
+    cv.match(/https?:\/\/(www\.)?linkedin\.com\/[^\s]+/i)?.[0] || "";
+
+  const github =
+    cv.match(/https?:\/\/(www\.)?github\.com\/[^\s]+/i)?.[0] || "";
+
+  const portfolio =
+    cv.match(
+      /https?:\/\/(?!.*(linkedin|github))[^\s]+|[a-zA-Z0-9-]+\.(vercel\.app|netlify\.app)/i
+    )?.[0] || "";
+
+  return [email, phone, linkedin, github, portfolio]
+    .filter(Boolean)
+    .join(" | ");
+}
+
 // ─── TAB: EVALUATE ───────────────────────────────────────────────────────────
 
 function EvaluateTab({ jd, cv, apiKey, evalResult, setEvalResult, resumeResult, setResumeResult }) {
@@ -268,13 +268,29 @@ function EvaluateTab({ jd, cv, apiKey, evalResult, setEvalResult, resumeResult, 
     finally { setLoading(false); }
   };
 
-  const generateResume = async () => {
-    setGenLoading(true); setError("");
-    try { setResumeResult(await callGroq(apiKey, RESUME_PROMPT, `JD:\n${jd}\n\nCV:\n${cv}`)); }
-    catch (e) { setError(e.message); }
-    finally { setGenLoading(false); }
-  };
+const generateResume = async () => {
+  setGenLoading(true);
+  setError("");
 
+  try {
+    const aiResume = await callGroq(
+      apiKey,
+      RESUME_PROMPT,
+      `JD:\n${jd}\n\nCV:\n${cv}`
+    );
+
+    const extractedContact = extractContact(cv);
+
+    setResumeResult({
+      ...aiResume,
+      contact: extractedContact,
+    });
+  } catch (e) {
+    setError(e.message);
+  } finally {
+    setGenLoading(false);
+  }
+};
   const download = async () => {
     setDownloading(true);
     try { await generateDocx(resumeResult); }
