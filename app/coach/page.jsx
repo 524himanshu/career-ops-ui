@@ -4,11 +4,13 @@ import { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle, Level
 import { saveAs } from "file-saver";
 
 // ─── GROQ ────────────────────────────────────────────────────────────────────
-
 async function callGroq(apiKey, systemPrompt, userContent, maxTokens = 2000) {
   const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
       model: "llama-3.3-70b-versatile",
       messages: [
@@ -17,12 +19,34 @@ async function callGroq(apiKey, systemPrompt, userContent, maxTokens = 2000) {
       ],
       temperature: 0.3,
       max_tokens: maxTokens,
+      response_format: { type: "json_object" }
     }),
   });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || "Groq error"); }
+
+  if (!res.ok) {
+    const e = await res.json();
+    throw new Error(e.error?.message || "Groq error");
+  }
+
   const data = await res.json();
-  const text = data.choices[0].message.content.trim();
-  return JSON.parse(text.replace(/```json|```/g, "").trim());
+  const text = data.choices?.[0]?.message?.content;
+
+  if (!text) {
+    throw new Error("Empty response from Groq");
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.error("RAW GROQ RESPONSE:", text);
+
+    const fixed = text
+      .replace(/[\u0000-\u001F]+/g, " ")
+      .replace(/```json|```/g, "")
+      .trim();
+
+    return JSON.parse(fixed);
+  }
 }
 
 async function callGroqText(apiKey, systemPrompt, userContent, maxTokens = 1500) {
