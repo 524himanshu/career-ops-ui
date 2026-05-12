@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "OfferForge",
-  description: "AI-powered job search, match scoring, resume tailoring, and interview prep",
+  description: "AI-powered job search, resume tailoring, match scoring, outreach, interview prep, and application tracking.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body
+  className="min-h-full flex flex-col"
+  suppressHydrationWarning
+>{children}</body>
     </html>
   );
 }

@@ -67,13 +67,21 @@ const RESUME_PROMPT = `You are an expert resume writer. Return ONLY valid JSON:
   "contact": "<email | phone | linkedin | github>",
   "summary": "<3 sentences tailored to JD, first person>",
   "skills": { "Frontend": "<relevant>", "Backend": "<relevant>", "AI/ML": "<if relevant>", "Tools": "<relevant>" },
-  "projects": [{"name":"<n>","stack":"<s>","bullets":["<b1>","<b2>","<b3>"]}],
+  "projects": [
+    {
+      "name":"<n>",
+      "stack":"<s>",
+      "github":"<GitHub URL if available from CV, otherwise empty string>",
+      "demo":"<Live demo URL if available from CV, otherwise empty string>",
+      "bullets":["<b1>","<b2>","<b3>"]
+    }
+  ],
   "experience": [{"role":"<r>","company":"<c>","period":"<p>","bullets":["<b1>","<b2>"]}],
   "education": [{"degree":"<d>","institution":"<i>","period":"<p>","note":"<gpa>"}],
   "certifications": ["<c1>","<c2>","<c3>"],
   "cover_note": "<one strong paragraph, direct, no buzzwords>"
 }
-Only include top 3 most relevant projects. Rewrite bullets to match JD. No invented experience.`;
+Only include top 3 most relevant projects. Rewrite bullets to match JD. No invented experience.Preserve real GitHub and live demo links from the candidate CV. Do not invent URLs.`;
 
 const INTERVIEW_PROMPT = `You are a senior technical interviewer. Given the JD and CV, return ONLY valid JSON:
 {
@@ -159,10 +167,56 @@ async function generateDocx(resume) {
     ...Object.entries(resume.skills).filter(([, v]) => v?.trim()).map(([k, v]) => skillRow(k, v)),
     new Paragraph({ spacing: { before: 0, after: 80 }, children: [] }),
     sh("Projects"),
-    ...resume.projects.flatMap(p => [
-      new Paragraph({ spacing: { before: 140, after: 40 }, children: [new TextRun({ text: p.name, bold: true, size: 21, font: FONT, color: C.dark }), new TextRun({ text: "  |  " + p.stack, size: 19, font: FONT, color: C.light, italics: true })] }),
-      ...p.bullets.map(bul),
-    ]),
+    ...resume.projects.flatMap(p => {
+  const children = [
+    new TextRun({
+      text: p.name,
+      bold: true,
+      size: 21,
+      font: FONT,
+      color: C.dark
+    }),
+    new TextRun({
+      text: "  |  " + p.stack,
+      size: 19,
+      font: FONT,
+      color: C.light,
+      italics: true
+    })
+  ];
+
+  if (p.github) {
+    children.push(
+      new TextRun({
+        text: "  |  GitHub",
+        size: 19,
+        font: FONT,
+        color: "1a56db",
+        underline: {}
+      })
+    );
+  }
+
+  if (p.demo) {
+    children.push(
+      new TextRun({
+        text: "  |  Live Demo",
+        size: 19,
+        font: FONT,
+        color: "00aa66",
+        underline: {}
+      })
+    );
+  }
+
+  return [
+    new Paragraph({
+      spacing: { before: 140, after: 40 },
+      children
+    }),
+    ...p.bullets.map(bul)
+  ];
+}),
     sh("Experience"),
     ...resume.experience.flatMap(e => [twoCol(`${e.role} · ${e.company}`, e.period), ...e.bullets.map(bul)]),
     sh("Education"),
@@ -386,7 +440,91 @@ const generateResume = async () => {
               {[
                 { title: "Summary", content: <p style={{ color: "#aaa", fontSize: 13, lineHeight: 1.7, margin: 0 }}>{resumeResult.summary}</p> },
                 { title: "Skills", content: Object.entries(resumeResult.skills).filter(([, v]) => v?.trim()).map(([k, v]) => <div key={k} style={{ display: "flex", gap: 8, marginBottom: 5 }}><span style={{ color: "#fff", fontSize: 12, fontWeight: 600, minWidth: 80, flexShrink: 0 }}>{k}:</span><span style={{ color: "#666", fontSize: 12 }}>{v}</span></div>) },
-                { title: "Projects", content: resumeResult.projects.map((p, i) => <div key={i} style={{ marginBottom: 16 }}><div style={{ color: "#fff", fontSize: 13, fontWeight: 700, marginBottom: 6 }}>{p.name} <span style={{ color: "#333", fontWeight: 400 }}>| {p.stack}</span></div>{p.bullets.map((b, j) => <div key={j} style={{ display: "flex", gap: 8, marginBottom: 4 }}><span style={{ color: "#2a2a2a" }}>–</span><span style={{ color: "#888", fontSize: 12, lineHeight: 1.6 }}>{b}</span></div>)}</div>) },
+                {
+  title: "Projects",
+  content: resumeResult.projects.map((p, i) => (
+    <div key={i} style={{ marginBottom: 16 }}>
+      <div
+        style={{
+          color: "#fff",
+          fontSize: 13,
+          fontWeight: 700,
+          marginBottom: 6,
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <span>{p.name}</span>
+
+        <span style={{ color: "#333", fontWeight: 400 }}>
+          | {p.stack}
+        </span>
+
+        {p.github && (
+          <a
+            href={p.github}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: "#4488ff",
+              textDecoration: "none",
+              fontSize: 11,
+              fontFamily: "'DM Mono', monospace",
+              border: "1px solid #4488ff33",
+              padding: "3px 8px",
+              borderRadius: 6,
+            }}
+          >
+            GitHub ↗
+          </a>
+        )}
+
+        {p.demo && (
+          <a
+            href={p.demo}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: "#00ff87",
+              textDecoration: "none",
+              fontSize: 11,
+              fontFamily: "'DM Mono', monospace",
+              border: "1px solid #00ff8733",
+              padding: "3px 8px",
+              borderRadius: 6,
+            }}
+          >
+            Live Demo ↗
+          </a>
+        )}
+      </div>
+
+      {p.bullets.map((b, j) => (
+        <div
+          key={j}
+          style={{
+            display: "flex",
+            gap: 8,
+            marginBottom: 4,
+          }}
+        >
+          <span style={{ color: "#2a2a2a" }}>–</span>
+          <span
+            style={{
+              color: "#888",
+              fontSize: 12,
+              lineHeight: 1.6,
+            }}
+          >
+            {b}
+          </span>
+        </div>
+      ))}
+    </div>
+  )),
+}
               ].map((s, i) => (
                 <div key={i} style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 10, color: "#4488ff", fontFamily: "'DM Mono',monospace", letterSpacing: 3, marginBottom: 10, paddingBottom: 6, borderBottom: "1px solid #1a1a1a" }}>{s.title.toUpperCase()}</div>
